@@ -3,8 +3,10 @@ package game.game;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import game.sprite.Bullet;
@@ -21,6 +23,17 @@ public class MyGame extends JPanel implements Runnable {
 	public static final Rect SCREEN_RECT = new Rect(0,0,
 			ScreenWidth,ScreenHeight);
 	public static BufferedImage[] ImagePool;
+	String[] ImageNames = {
+		"airplane.png",
+		"background.png",
+		"bee.png",
+		"bullet.png",
+		"gameover.png",
+		"hero0.png",
+		"hero1.png",
+		"pause.png",
+		"start.png"
+	};
 	public static final int IMG_ENMEY1 = 0;
 	public static final int IMG_BACKGROUND = 1;
 	public static final int IMG_BEE = 2;
@@ -36,6 +49,7 @@ public class MyGame extends JPanel implements Runnable {
 	public static final int STATE_GAMING = STATE_START + 1;
 	public static final int STATE_PAUSE = STATE_GAMING + 1;
 	public static final int STATE_OVER = STATE_PAUSE + 1;
+	
 	
 	Hero hero;
 	ArrayList<Enemy> enemys;
@@ -110,7 +124,16 @@ public class MyGame extends JPanel implements Runnable {
 
 	private void initImage() {
 		// TODO Auto-generated method stub
-		
+		ImagePool = new BufferedImage[ImageNames.length];
+		for(int i=0; i<ImagePool.length; i++) {
+		try {
+			ImagePool[i] = ImageIO.read(
+					MyGame.class.getResource(
+							"/res/" + ImageNames[i]));
+		} catch (IOException e) {
+			e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
