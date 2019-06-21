@@ -1,5 +1,6 @@
 package game.game;
 
+import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -41,7 +42,7 @@ public class MyGame extends JPanel implements Runnable {
 	public static final int IMG_GAMEOVER = 4;
 	public static final int IMG_HERO0 = 5;
 	public static final int IMG_HERO1 = 6;
-	public static final int IMG_PASUE = 7;
+	public static final int IMG_PAUSE = 7;
 	public static final int IMG_START = 8;
 	
 	int game_state = 0;//控制游戏状态的状态机
@@ -135,9 +136,64 @@ public class MyGame extends JPanel implements Runnable {
 			}
 		}
 	}
+	
+	public void paint(Graphics g) {
+		g.drawImage(ImagePool[IMG_BACKGROUND],
+				0, 0, null);
+		switch(game_state) {
+		case STATE_START:
+			BufferedImage img = ImagePool[IMG_START];
+			drawState(g,img);
+			break;
+		case STATE_GAMING:
+			for(int i = 0; i < bullets.size(); i++) {
+			   bullets.get(i).draw(g);
+			}
+			for(int i = 0; i < enemys.size(); i++) {
+			   enemys.get(i).draw(g);
+			}
+			hero.draw(g);
+			break;
+		case STATE_PAUSE:
+			BufferedImage img1 = ImagePool[IMG_PAUSE];
+			drawState(g,img1);
+			break;
+		case STATE_OVER:
+			BufferedImage img2 = ImagePool[IMG_GAMEOVER];
+			drawState(g,img2);
+			break;
+		}
+			
+	}
+	private void drawState(Graphics g, BufferedImage img) {
+		// TODO Auto-generated method stub
+		int imgW = img.getWidth();
+		int imgH = img.getHeight();
+		int logolX = 200;
+		int logolY = 200;
+		g.drawImage(img, logolX, logolY, null);
+	}
 
 	@Override
 	public void run() {
+		// TODO Auto-generated method stub
+		while(true) {
+			try {
+				long startTime = System.currentTimeMillis();
+				logic();
+				repaint();
+				long endTime = System.currentTimeMillis();
+				long runTime = endTime - startTime;
+				if(runTime < FLUSHTIME) {
+					Thread.sleep(FLUSHTIME - runTime);
+				}
+			}catch(Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+	private void logic() {
 		// TODO Auto-generated method stub
 		
 	}
