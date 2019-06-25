@@ -6,17 +6,21 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
+import game.sprite.Bee;
 import game.sprite.Bullet;
 import game.sprite.Enemy;
 import game.sprite.Hero;
+import game.sprite.MySprite;
 import game.util.Rect;
 
 public class MyGame extends JPanel implements Runnable {
 
+	private static final boolean DEBUG = false;
 	public static final int FLUSHTIME = 100;//游戏的每帧刷新间隔时间，匀速刷新
 	//显示游戏屏幕的宽高
 	public static final int ScreenWidth = 480;
@@ -35,7 +39,7 @@ public class MyGame extends JPanel implements Runnable {
 		"pause.png",
 		"start.png"
 	};
-	public static final int IMG_ENMEY1 = 0;
+	public static final int IMG_ENEMY1 = 0;
 	public static final int IMG_BACKGROUND = 1;
 	public static final int IMG_BEE = 2;
 	public static final int IMG_BULLET = 3;
@@ -51,23 +55,30 @@ public class MyGame extends JPanel implements Runnable {
 	public static final int STATE_PAUSE = STATE_GAMING + 1;
 	public static final int STATE_OVER = STATE_PAUSE + 1;
 	
+	Random ran;
+	public static MyGame instance;
 	
 	Hero hero;
 	ArrayList<Enemy> enemys;
-	int EnemySpeed = 1;
-	int EnemyCoolTime = 1;
-	int EnemyBirthTime = 1;
+	int enemySpeed = 1;
+	int enemyCoolDown = 1;
+	int enemyBirthTime = 1;
 	
 	ArrayList<Bullet> bullets;
 	int BulletSpeed = 1;
-	int BulletCoolTime = 1;
+	int BulletCoolDown = 1;
 	int BulletBirthTime = 1;
 	
+	public int score;
+	
 	public MyGame() {
+		instance = this;
+		ran = new Random();
 		initImage();
 		initAdapter();
 		initSprite();
 		
+		score = 0;
 		game_state = STATE_START;
 	}
 
@@ -195,6 +206,106 @@ public class MyGame extends JPanel implements Runnable {
 
 	private void logic() {
 		// TODO Auto-generated method stub
+		switch(game_state) {
+		case STATE_GAMING :
+			hero.logic();
+			for(int i = 0; i < enemys.size(); i++) {
+				if(!inScreen(enemys.get(i))) {
+					enemys.remove(i);
+					i--;
+					continue;
+				}
+				enemys.get(i).logic();
+				if(enemys.get(i).hit(hero)) {
+					enemys.remove(i);
+					i--;
+					if(!DEBUG) {
+						hero.hp--;
+					}
+					if(hero.hp < 1) {
+						game_state = STATE_OVER;
+						resetGame();
+						return;//返回什么
+					}
+					
+				}
+			}
+			for(int i = 0; i < bullets.size(); i++) {
+				if(!inScreen(bullets.get(i))) {
+					bullets.remove(i);
+					i--;
+				}
+				bullets.get(i).logic();
+				for(int j = 0; j < enemys.size(); j++) {
+					if(bullets.get(i).hit(enemys.get(j))) {
+						bullets.remove(i);
+						score += enemys.get(j).score;
+						if(enemys.get(i).type == Enemy.TYPE_BEE) {
+							if(hero.fireLevel < Hero.TOP_FIRE) {
+								hero.fireLevel ++;
+							}
+						}
+						enemys.remove(j);//为什么没有 j--
+						i--;
+						break;
+					}
+				}
+				
+			}
+			generateEnemy();
+			break;
+		}
+	}
+
+	private void generateEnemy() {
+		if(enemyCoolDown < 0) {
+			Enemy temp;
+			int randomEnemy = ran.nextInt(100);
+			if(randomEnemy < 10) {
+				temp = birthBee();
+			}else {
+				temp = birthPlane();
+			}
+			enemyCoolDown = enemyBirthTime;
+			enemys.add(temp);
+		}
+		enemyCoolDown --;
+		
+	}
+
+	private Enemy birthPlane() {
+		int ex = 24 + ran.nextInt(ScreenWidth - 72);
+		int ey = 0;
+		Enemy temp = new Enemy(ImagePool[IMG_ENEMY1], ex, ey);
+		temp.setSpeed(0, enemySpeed);
+		return temp;
+	}
+
+	private Enemy birthBee() {
+		Bee bee;
+		int dir = ran.nextInt(1);
+		if(dir == 0) {
+			int ex = 0;
+			int ey = 100 + ran.nextInt(100);
+			bee = new Bee(ImagePool[IMG_BEE], ex, ey);
+		}else{
+			int ex = ScreenWidth;
+			int ey = 100 + ran.nextInt(100);
+			bee = new Bee(ImagePool[IMG_BEE], ex, ey);
+		}
+		bee.dir = dir;
+		return bee;
+	}
+
+	private void resetGame() {
+		// TODO Auto-generated method stub
+		enemys.clear();
+		bullets.clear();
+		score = 0;
+		game_state = STATE_START;
+	}
+
+	public boolean inScreen(MySprite sprite) {
 		
 	}
 	
