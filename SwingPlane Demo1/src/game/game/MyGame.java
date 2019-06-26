@@ -308,6 +308,11 @@ public class MyGame extends JPanel implements Runnable {
 	public boolean inScreen(MySprite sprite) {
 		
 	}
+
+	public void start() {
+		new Thread(this).start();
+		
+	}
 	
 	
 }

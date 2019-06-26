@@ -1,43 +1,31 @@
 package game.main;
-
-import java.awt.EventQueue;
-
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
-public class PlaneMain {
+import game.game.MyGame;
 
-	private JFrame frame;
+public class PlaneMain {
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					PlaneMain window = new PlaneMain();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		JFrame window = new JFrame("SWing");
+		MyGame game = new MyGame();
+		setFrame(window,game);
+		game.start();
 	}
 
-	/**
-	 * Create the application.
-	 */
-	public PlaneMain() {
-		initialize();
+	private static void setFrame(JFrame window, MyGame game) {
+		window.add(game);
+		window.setSize(MyGame.ScreenWidth, MyGame.ScreenHeight);
+		window.setAlwaysOnTop(true);
+		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		window.setIconImage(
+				new ImageIcon("image/icon.jpg").getImage());
+		window.setLocationRelativeTo(null);
+		window.setVisible(true);
 	}
 
-	/**
-	 * Initialize the contents of the frame.
-	 */
-	private void initialize() {
-		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
-
+	
 }

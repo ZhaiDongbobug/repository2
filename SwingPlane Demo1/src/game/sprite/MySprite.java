@@ -11,6 +11,7 @@ public class MySprite {
 	
 	int x,y;
 	int w,h;
+	int cx,cy;
 	int vx,vy;
 	
 	public Rect myRect;
@@ -27,6 +28,13 @@ public class MySprite {
 		vy = ty;
 	}
 	public void logic() {
+		move();
+	}
+	private void move() {
+		x += vx;
+		y += vy;
+		
+		myRect.setPostion(x, y, w, h);
 		
 	}
 	public boolean hit(MySprite other) {
