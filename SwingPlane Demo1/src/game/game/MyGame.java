@@ -306,7 +306,7 @@ public class MyGame extends JPanel implements Runnable {
 	}
 
 	public boolean inScreen(MySprite sprite) {
-		
+		return SCREEN_RECT.nineCollsion(sprite.myRect);
 	}
 
 	public void start() {
