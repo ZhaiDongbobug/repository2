@@ -1,28 +1,12 @@
 package game.sprite;
 
-import java.awt.Graphics;
-import java.util.ArrayList;
+import java.awt.image.BufferedImage;
 
-public class Bullet {
+public class Bullet extends MySprite {
 
-	public void draw(Graphics g) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void logic() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public boolean hit(ArrayList<Enemy> enemys) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean hit(Enemy enemy) {
-		// TODO Auto-generated method stub
-		return false;
+	public Bullet(BufferedImage img, int x, int y) {
+		super(img, x, y);
+		// TODO Auto-generated constructor stub
 	}
 
 }
