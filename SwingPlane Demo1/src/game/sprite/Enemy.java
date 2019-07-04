@@ -11,6 +11,8 @@ public class Enemy extends MySprite{
 
 	public Enemy(BufferedImage img, int x, int y) {
 		super(img,x,y);
+		score = 100;
+		type = TYPE_PLANE;
 	}
 
 
