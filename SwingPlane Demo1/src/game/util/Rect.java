@@ -40,7 +40,10 @@ public class Rect {
 	}
 
 	private boolean isPointIn(int[] point) {
-		
+		if(point[0] >= left && point[0] <= right &&
+				point[1] >= top && point[1] <= bottom){
+			return true;
+		}
 		return false;
 	}
 }

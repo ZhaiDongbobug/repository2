@@ -20,7 +20,7 @@ import game.util.Rect;
 
 public class MyGame extends JPanel implements Runnable {
 
-	private static final boolean DEBUG = false;
+	public static final boolean DEBUG = false;
 	public static final int FLUSHTIME = 100;//游戏的每帧刷新间隔时间，匀速刷新
 	//显示游戏屏幕的宽高
 	public static final int ScreenWidth = 480;
@@ -60,14 +60,11 @@ public class MyGame extends JPanel implements Runnable {
 	
 	Hero hero;
 	ArrayList<Enemy> enemys;
-	int enemySpeed = 1;
-	int enemyCoolDown = 1;
-	int enemyBirthTime = 1;
+	int enemySpeed = 10;
+	int enemyCoolDown = 0;
+	int enemyBirthTime = 4;
 	
 	ArrayList<Bullet> bullets;
-	int BulletSpeed = 1;
-	int BulletCoolDown = 1;
-	int BulletBirthTime = 1;
 	
 	public int score;
 	
@@ -313,6 +310,11 @@ public class MyGame extends JPanel implements Runnable {
 		new Thread(this).start();
 		
 	}
-	
+	public void addBullet(int tx, int ty, int vx, int vy) {
+		Bullet temp = new Bullet(
+				ImagePool[IMG_BULLET],tx, ty);
+		temp.setSpeed(vx, vy);
+		bullets.add(temp);
+	}
 	
 }
