@@ -1,8 +1,9 @@
 package game.util;
 
+//一个方块的类，用于检测碰撞
 public class Rect {
 	public int left,right,top,bottom;
-	int[][] ninePoints;
+	int[][] ninePoints;//九点判断法使用的坐标
 	public Rect(int x, int y, int w, int h) {
 		setPostion(x, y, w, h);
 	}

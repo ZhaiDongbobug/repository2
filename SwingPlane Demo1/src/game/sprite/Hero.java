@@ -11,7 +11,7 @@ public class Hero extends MySprite{
 	public static final int TOP_FIRE = 1;
 	public int hp;
 	public int fireLevel;
-	int currenFrame;
+	int currenFrame;//当前绘制的帧
 	int bulletVx,bulletVy;
 
 	public Hero(BufferedImage img[], int x, int y) {

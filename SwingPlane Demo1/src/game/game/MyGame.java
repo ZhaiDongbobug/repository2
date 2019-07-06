@@ -1,5 +1,6 @@
 package game.game;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -38,7 +39,7 @@ public class MyGame extends JPanel implements Runnable {
 		"hero1.png",
 		"pause.png",
 		"start.png"
-	};
+	};//给定了图片的数量，并且从资源文件调用时会用到
 	public static final int IMG_ENEMY1 = 0;
 	public static final int IMG_BACKGROUND = 1;
 	public static final int IMG_BEE = 2;
@@ -48,44 +49,44 @@ public class MyGame extends JPanel implements Runnable {
 	public static final int IMG_HERO1 = 6;
 	public static final int IMG_PAUSE = 7;
 	public static final int IMG_START = 8;
-	
+	// 到时用其引用相应图片
 	int game_state = 0;//控制游戏状态的状态机
 	public static final int STATE_START = 0;
 	public static final int STATE_GAMING = STATE_START + 1;
 	public static final int STATE_PAUSE = STATE_GAMING + 1;
 	public static final int STATE_OVER = STATE_PAUSE + 1;
 	
-	Random ran;
-	public static MyGame instance;
+	Random ran;//游戏中的随机数
+	public static MyGame instance;//单例模式，本类对象
 	
-	Hero hero;
-	ArrayList<Enemy> enemys;
+	Hero hero;//主角精灵
+	ArrayList<Enemy> enemys;//敌人精灵们
 	int enemySpeed = 10;
-	int enemyCoolDown = 0;
-	int enemyBirthTime = 4;
+	int enemyCoolDown = 0;//生成冷却时间
+	int enemyBirthTime = 4;//敌机生成间隔
 	
-	ArrayList<Bullet> bullets;
+	ArrayList<Bullet> bullets;//子弹精灵们
 	
-	public int score;
+	public int score;//分数
 	
 	public MyGame() {
 		instance = this;
-		ran = new Random();
-		initImage();
-		initAdapter();
-		initSprite();
+		ran = new Random();//初始化随机数
+		initImage();//初始化图片资源
+		initAdapter();//初始化适配器
+		initSprite();//初始化各种精灵
 		
 		score = 0;
-		game_state = STATE_START;
+		game_state = STATE_START;//游戏开始时显示开始界面
 	}
 
 	private void initSprite() {
 		// TODO Auto-generated method stub
-		BufferedImage[] heroimgs = new BufferedImage[2];
+		BufferedImage[] heroimgs = new BufferedImage[2];//有两种机型
 		heroimgs[0] = ImagePool[IMG_HERO0];
 		heroimgs[1] = ImagePool[IMG_HERO1];
-		int herox = 0;
-		int heroy = 0;
+		int herox = (ScreenWidth-heroimgs[0].getWidth())/2;
+		int heroy = ScreenHeight - heroimgs[0].getHeight()-50;
 		hero = new Hero(heroimgs, herox, heroy);
 		enemys = new ArrayList<Enemy>();
 		bullets = new ArrayList<Bullet>();
@@ -97,25 +98,25 @@ public class MyGame extends JPanel implements Runnable {
 			public void mouseMoved(MouseEvent event) {
 				if(game_state == STATE_GAMING) {
 					hero.setPostion(event.getX(), event.getY());
-					return;//为什么要return
+					return;
 				}
 				super.mouseMoved(event);//查一下日志，了解其逻辑
 			}
-			public void mouseEntered(MouseEvent arg0) {//了解参数的含义
+			public void mouseEntered(MouseEvent arg0) {//鼠标滑入游戏界面
 				if(game_state == STATE_PAUSE) {
 					game_state = STATE_GAMING;
 					return;
 				}
 				super.mouseEntered(arg0);
 			}
-			public void mouseExited(MouseEvent arg0) {
+			public void mouseExited(MouseEvent arg0) {//鼠标滑出游戏界面
 				if(game_state == STATE_GAMING) {
 					game_state = STATE_PAUSE;
 					return;
 				}
 				super.mouseExited(arg0);
 			}
-			public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(MouseEvent e) {//鼠标点击状态
 				if(game_state == STATE_PAUSE) {
 					game_state = STATE_GAMING;
 					return;
@@ -132,7 +133,8 @@ public class MyGame extends JPanel implements Runnable {
 	}
 
 	private void initImage() {
-		// TODO Auto-generated method stub
+		System.out.println(System.getProperty("user.dir"));
+		//初始化图片数组
 		ImagePool = new BufferedImage[ImageNames.length];
 		for(int i=0; i<ImagePool.length; i++) {
 		try {
@@ -161,6 +163,7 @@ public class MyGame extends JPanel implements Runnable {
 			   enemys.get(i).draw(g);
 			}
 			hero.draw(g);
+			drawUI(g);
 			break;
 		case STATE_PAUSE:
 			BufferedImage img1 = ImagePool[IMG_PAUSE];
@@ -175,10 +178,10 @@ public class MyGame extends JPanel implements Runnable {
 	}
 	private void drawState(Graphics g, BufferedImage img) {
 		// TODO Auto-generated method stub
-		int imgW = img.getWidth();
-		int imgH = img.getHeight();
-		int logolX = 200;
-		int logolY = 200;
+		int imgW = img.getWidth();//获得图片宽度
+		int imgH = img.getHeight();//获得图片高度
+		int logolX = (ScreenWidth - imgW)/2;
+		int logolY = (ScreenHeight - imgH)>>1 - 50;
 		g.drawImage(img, logolX, logolY, null);
 	}
 
@@ -188,11 +191,12 @@ public class MyGame extends JPanel implements Runnable {
 		while(true) {
 			try {
 				long startTime = System.currentTimeMillis();
-				logic();
-				repaint();
+				logic();//游戏逻辑，所有需要自动执行的操作
+				repaint();//重新绘制，刷新屏幕
 				long endTime = System.currentTimeMillis();
 				long runTime = endTime - startTime;
 				if(runTime < FLUSHTIME) {
+					//匀速刷新，运行太过卡顿则不休眠
 					Thread.sleep(FLUSHTIME - runTime);
 				}
 			}catch(Exception e) {
@@ -205,7 +209,9 @@ public class MyGame extends JPanel implements Runnable {
 		// TODO Auto-generated method stub
 		switch(game_state) {
 		case STATE_GAMING :
+			//主角逻辑
 			hero.logic();
+			//敌机的逻辑
 			for(int i = 0; i < enemys.size(); i++) {
 				if(!inScreen(enemys.get(i))) {
 					enemys.remove(i);
@@ -222,11 +228,12 @@ public class MyGame extends JPanel implements Runnable {
 					if(hero.hp < 1) {
 						game_state = STATE_OVER;
 						resetGame();
-						return;//返回什么
+						return;
 					}
 					
 				}
 			}
+			//子弹的逻辑
 			for(int i = 0; i < bullets.size(); i++) {
 				if(!inScreen(bullets.get(i))) {
 					bullets.remove(i);
@@ -249,6 +256,7 @@ public class MyGame extends JPanel implements Runnable {
 				}
 				
 			}
+			//生成敌人的逻辑
 			generateEnemy();
 			break;
 		}
@@ -316,5 +324,9 @@ public class MyGame extends JPanel implements Runnable {
 		temp.setSpeed(vx, vy);
 		bullets.add(temp);
 	}
-	
+	private void drawUI(Graphics g) {
+		g.setColor(Color.red);
+		g.drawString("生命值: "+hero.hp, 20, 20);
+		g.drawString("得分: "+score, 20, 60);
+	}
 }
